@@ -1,0 +1,64 @@
+/************************************************************
+ * Copyrights: Ahmed Mashaal                                *
+ * Arduino program for connecting Ultrasonic Sensor to LCD  *
+ * using Arduino Board displaying the ditance.              *
+ * ======================================================== *
+ * Connections for LCD is:                                  *
+ * GND —> GND                                               *
+ * VCC —> +Pin                                              *
+ * SDA —> A4                                                *
+ * SCL —> A5                                                *
+ * ======================================================== *
+ * Connections for Ultrasonic Sensor is:                    *
+ * GND —> GND                                               *
+ * VCC —> +Pin                                              *   
+ * SDA —> A4                                                *
+ * SCL —> A5                                                *
+ ************************************************************/
+ 
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd (0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+int trigPin = 13;
+int echoPin = 11;
+float pingTime;
+float v = 0.0343;//speed of sound
+float distance;
+
+void setup() {
+  lcd.begin(16,2);
+  pinMode(trigPin,OUTPUT);
+  pinMode(echoPin, INPUT);
+  lcd.setCursor(0,0); //Defining positon to write from first row,first column .
+  lcd.print("SOCIAL");
+  lcd.setCursor(0,1);
+  lcd.print("     DISTANCING"); //You can write 16 Characters per line .
+  delay(2000);//Delay used to give a dynamic effect
+  lcd.setCursor(0,0);
+  lcd.print("Distance:");
+}
+
+void loop() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2000);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(15);
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(10);
+
+  pingTime = pulseIn(echoPin, HIGH);
+  distance = (v*pingTime/2)/30.48;
+  lcd.setCursor(9,0);
+  lcd.print(distance);
+  lcd.print("ft ");
+  lcd.setCursor(0,1);
+  if (distance < 3)
+  {
+    lcd.print("YOU'RE UNSAFE!  ");
+  }
+  else{
+    lcd.print("NOW YOU'RE SAFE!");
+  }
+  delay(250);
+}
